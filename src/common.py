@@ -98,16 +98,59 @@ def with_session_refresh(function: Callable) -> Callable:
     """
     @functools.wraps(function)
     async def wrapper(*args, **kwargs):
+        # Extract context from kwargs or args
         ctx = kwargs.get('ctx')
-        if not ctx:
-            raise ValueError("Context is required")
-        user = ctx.request_context.lifespan_context.session
+        if ctx is None:
+            # Look for Context in args
+            from mcp.server.fastmcp import Context
+            for arg in args:
+                if isinstance(arg, Context):
+                    ctx = arg
+                    break
+
+        if ctx is None:
+            raise ValueError("Context not found in function arguments")
+
+        # Get the edge context which contains the session and credentials
+        edge_context = ctx.request_context.lifespan_context
+        if edge_context is None:
+            raise Exception("Edge connection not available. Please check environment variables.")
+
         try:
             return await function(*args, **kwargs)
         except SessionExpired:
-            await user.login()
+            await edge_context.login()
+            # Try the original function
             return await function(*args, **kwargs)
         except Exception as e:
             logger.error(f'Uncaught exception: {e}')
+
+            # Check if it's a session expired error (multiple ways to detect)
+            error_msg = str(e).lower()
+            is_session_error = (
+                isinstance(e, SessionExpired) or
+                "session expired" in error_msg or 
+                "session invalid" in error_msg or
+                "unauthorized" in error_msg or
+                "authentication" in error_msg or
+                "401" in error_msg
+            )
+
+            if is_session_error:
+                logger.info(f"Session expired or authentication error detected: {e}")
+                logger.info("Attempting to refresh session...")
+                try:
+                    # Re-authenticate using the stored credentials in edge_context
+                    await edge_context.login()
+                    logger.info("Session refreshed successfully, retrying operation...")
+                    # Retry the function
+                    return await function(*args, **kwargs)
+                except Exception as refresh_error:
+                    logger.error(f"Failed to refresh session: {refresh_error}")
+                    raise Exception(f"Session refresh failed: {refresh_error}") from e
+            else:
+                # If it's another error, log and re-raise it
+                logger.error(f'Uncaught exception in {function.__name__}: {e}')
+                raise
 
     return wrapper
