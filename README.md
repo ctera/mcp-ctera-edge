@@ -27,7 +27,7 @@ Configuration using Standard I/O:
 ```json
 {
     "mcpServers": {
-      "ctera-edge": {
+      "ctera-edge-mcp-stdio": {
         "command": "uv",
         "args": [
           "--directory",
@@ -65,7 +65,7 @@ $env:ctera.mcp.edge.settings.ssl = "true"
 ```json
 {
   "mcpServers": {
-    "ctera-edge-sse": {
+    "ctera-edge-mcp-sse": {
       "url": "http://localhost:8000/sse"
     }
   }
