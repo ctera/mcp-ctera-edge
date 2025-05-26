@@ -31,15 +31,15 @@ Configuration using Standard I/O:
         "command": "uv",
         "args": [
           "--directory",
-          "/path/to/mcp-ctera-edge",
+          "/path/to/mcp-ctera-edge/src",
           "run",
-          "src/stdio.py"
+          "stdio.py"
         ],
         "env": {
-          "ctera.mcp.edge.settings.host": "your.ctera.edge.address",
+          "ctera.mcp.edge.settings.host": "",
           "ctera.mcp.edge.settings.user": "admin",
           "ctera.mcp.edge.settings.password": "your-password",
-          "ctera.mcp.edge.settings.connector.ssl": false
+          "ctera.mcp.edge.settings.ssl": "true"
         }
       }
     }
@@ -49,17 +49,17 @@ Configuration using Standard I/O:
 Configuration using SSE:
 
 ```bash
-export ctera.mcp.edge.settings.host="your.ctera.edge.ip"
-export ctera.mcp.edge.settings.user="admin"
-export ctera.mcp.edge.settings.password="your-password"
-export ctera.mcp.edge.settings.connector.ssl="false"
+export ctera.mcp.edge.settings.host="your.ctera.edge.hostname.or.ipaddr"
+export ctera.mcp.edge.settings.user="admin-username"
+export ctera.mcp.edge.settings.password="admin-password"
+export ctera.mcp.core.settings.ssl="true"
 ```
 
 ```powershell
-$env:ctera.mcp.edge.settings.host = "your.ctera.edge.ip"
-$env:ctera.mcp.edge.settings.user = "admin"
-$env:ctera.mcp.edge.settings.password = "your-password"
-$env:ctera.mcp.edge.settings.connector.ssl = "false"
+$env:ctera.mcp.edge.settings.host = "your.ctera.edge.hostname.or.ipaddr"
+$env:ctera.mcp.edge.settings.user = "admin-username"
+$env:ctera.mcp.edge.settings.password = "admin-password"
+$env:ctera.mcp.edge.settings.ssl = "true"
 ```
 
 ```json
@@ -71,27 +71,3 @@ $env:ctera.mcp.edge.settings.connector.ssl = "false"
   }
 }
 ```
-
----
-
-## 🛠️ Available Tools
-
-- **ctera_edge_list_dir**: List directory contents with file metadata
-- **ctera_edge_create_directory**: Create new directories
-- **ctera_edge_copy_item**: Copy files and directories
-- **ctera_edge_move_item**: Move files and directories
-- **ctera_edge_delete_item**: Delete files and directories
-- **ctera_edge_upload_item**: Upload files from local path to CTERA Edge
-- **ctera_edge_download_item**: Download files from CTERA Edge to local path
-
----
-
-## 🔐 Environment Variables
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `ctera.mcp.edge.settings.host` | CTERA Edge Filer IP/hostname | - | Yes |
-| `ctera.mcp.edge.settings.user` | Username for authentication | - | Yes |
-| `ctera.mcp.edge.settings.password` | Password for authentication | - | Yes |
-| `ctera.mcp.edge.settings.connector.ssl` | Enable SSL connection | `true` | No |
-| `ctera.mcp.edge.settings.port` | Connection port | `443` | No |

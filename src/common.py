@@ -10,7 +10,7 @@ from cterasdk.exceptions import SessionExpired
 
 
 logger = logging.getLogger('ctera.mcp.edge')
-logger.info("Starting CTERA Edge Model Context Protocol [MCP] Server.")
+logger.info("Starting CTERA Edge Filer Model Context Protocol [MCP] Server.")
 
 
 @dataclass
@@ -23,13 +23,8 @@ class Env:
         self.user = user
         self.password = password
         self.port = int(os.environ.get(f'{Env.__namespace__}.port', 443))
-        # Handle SSL setting as either boolean or string
-        ssl_env = os.environ.get(f'{Env.__namespace__}.connector.ssl', 'True')
-        if isinstance(ssl_env, bool):
-            self.ssl = ssl_env
-        else:
-            # Convert string to boolean - handle 'False', 'false', '0', etc.
-            self.ssl = ssl_env.lower() not in ('false', '0', 'no', 'off')
+        ssl = os.environ.get(f'{Env.__namespace__}.ssl', None)
+        self.ssl = False if ssl in ['false', False] else True
 
     @staticmethod
     def load():
@@ -44,7 +39,7 @@ class EdgeContext:
 
     def __init__(self, edge, env: Env):
         settings.edge.asyn.settings.connector.ssl = env.ssl
-        self._session = edge(env.host, env.port)
+        self._session = edge(base=env.host) if env.host.startswith('https') else edge(env.host, env.port)
         self._user = env.user
         self._password = env.password
 
