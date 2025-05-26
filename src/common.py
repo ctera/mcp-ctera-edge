@@ -59,7 +59,7 @@ class EdgeContext:
         """
         await self.session.logout()
 
-    @staticmethod  
+    @staticmethod
     def initialize(env: Env):
         """
         Initialize Edge Context.
