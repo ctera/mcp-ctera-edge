@@ -81,6 +81,8 @@ $env:ctera.mcp.edge.settings.connector.ssl = "false"
 - **ctera_edge_copy_item**: Copy files and directories
 - **ctera_edge_move_item**: Move files and directories
 - **ctera_edge_delete_item**: Delete files and directories
+- **ctera_edge_upload_item**: Upload files from local path to CTERA Edge
+- **ctera_edge_download_item**: Download files from CTERA Edge to local path
 
 ---
 
