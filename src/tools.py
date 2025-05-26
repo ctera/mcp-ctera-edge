@@ -11,18 +11,25 @@ async def ctera_edge_list_dir(
     List the contents of a specified directory on CTERA Edge Filer.
     
     Args:
-        path (str): The path to the directory to list (e.g. '/cloud/users').
+        path (str): The path to the directory to list (e.g. 'cloud/users' or '/cloud/users').
         ctx: Request context
         
     Returns:
         list[dict]: A list of dictionaries containing file information.
     """
     edge = ctx.request_context.lifespan_context.session
-    iterator = await edge.files.listdir(path)
+    
+    path = path.lstrip('/')
+    
+    files = await edge.files.listdir(path)
 
     return [{
         'name': f.name,
-        'last_modified': f.lastmodified,
-        'is_dir': f.isFolder,
-        'id': getattr(f, 'fileId', None)
-    } async for f in iterator]
+        'last_modified': f.modificationTime,
+        'deleted': getattr(f, 'isDeleted', False),
+        'is_dir': f.type == 'folder',
+        'id': getattr(f, 'fileId', None),
+        'type': f.type,
+        'full_path': f.fullpath,
+        'has_subfolders': getattr(f, 'hasSubfolders', None)
+    } for f in files]
