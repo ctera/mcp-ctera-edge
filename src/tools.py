@@ -203,3 +203,95 @@ async def ctera_edge_delete_item(
             'path': path,
             'error': str(e)
         }
+
+
+@mcp.tool()
+@with_session_refresh
+async def ctera_edge_upload_item(
+    local_path: str, destination_directory: str, ctx: Context
+) -> dict:
+    """
+    Upload a file from local path to a destination directory on CTERA Edge Filer.
+    
+    Args:
+        local_path (str): The local file path to upload (e.g. 'Playground/av.py').
+        destination_directory (str): The destination directory on CTERA Edge where to upload the file (e.g. 'cloud/users/ron/MCP Demo/test').
+        ctx: Request context
+        
+    Returns:
+        dict: A dictionary containing the result of the upload operation.
+    """
+    edge = ctx.request_context.lifespan_context.session
+    
+    # Normalize destination path - remove leading slash if present for CTERA API
+    destination_directory = destination_directory.lstrip('/')
+    
+    try:
+        # Upload the file to the destination directory
+        await edge.files.upload_file(local_path, destination_directory)
+        
+        # Extract the filename from local path for the result message
+        filename = local_path.split('/')[-1]  # Works for both Unix and Windows paths
+        final_destination = f"{destination_directory}/{filename}"
+        
+        return {
+            'success': True,
+            'message': f'File uploaded successfully from {local_path} to {final_destination}',
+            'local_path': local_path,
+            'destination_directory': destination_directory,
+            'final_destination': final_destination,
+            'filename': filename
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Failed to upload file: {str(e)}',
+            'local_path': local_path,
+            'destination_directory': destination_directory,
+            'error': str(e)
+        }
+
+
+@mcp.tool()
+@with_session_refresh
+async def ctera_edge_download_item(
+    remote_path: str, local_path: str, ctx: Context
+) -> dict:
+    """
+    Download a file from CTERA Edge Filer to a local path.
+    
+    Args:
+        remote_path (str): The path of the file on CTERA Edge to download (e.g. 'cloud/users/ron/MCP Demo/test/av.py').
+        local_path (str): The local path where to save the downloaded file (e.g. 'Playground/av2.py').
+        ctx: Request context
+        
+    Returns:
+        dict: A dictionary containing the result of the download operation.
+    """
+    edge = ctx.request_context.lifespan_context.session
+    
+    # Normalize remote path - remove leading slash if present for CTERA API
+    remote_path = remote_path.lstrip('/')
+    
+    try:
+        # Download the file from CTERA Edge to local path
+        await edge.files.download(remote_path, local_path)
+        
+        # Extract the filename from remote path for the result message
+        filename = remote_path.split('/')[-1]
+        
+        return {
+            'success': True,
+            'message': f'File downloaded successfully from {remote_path} to {local_path}',
+            'remote_path': remote_path,
+            'local_path': local_path,
+            'filename': filename
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'message': f'Failed to download file: {str(e)}',
+            'remote_path': remote_path,
+            'local_path': local_path,
+            'error': str(e)
+        }
