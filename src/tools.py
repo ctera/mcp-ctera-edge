@@ -80,6 +80,14 @@ async def ctera_edge_filer_upload_item(
 
 @mcp.tool()
 @with_session_refresh
+async def ctera_edge_filer_download_file(path: str, destination: str, ctx: Context = None) -> str:
+    edge = ctx.request_context.lifespan_context.session
+    await edge.files.download(path, destination=destination)
+    return f"Downloaded: {path} to: {destination}"
+
+
+@mcp.tool()
+@with_session_refresh
 async def ctera_edge_filer_read_file(path: str, ctx: Context) -> str:
     edge = ctx.request_context.lifespan_context.session
     handle = await edge.files.handle(path)
