@@ -23,9 +23,13 @@ class Env:
         self.user = user
         self.password = password
         self.port = int(os.environ.get(f'{Env.__namespace__}.port', 443))
-        # Convert SSL string to boolean - handle 'False', 'false', '0', etc.
-        ssl_env = os.environ.get(f'{Env.__namespace__}.ssl', 'True')
-        self.ssl = ssl_env.lower() not in ('false', '0', 'no', 'off')
+        # Handle SSL setting as either boolean or string
+        ssl_env = os.environ.get(f'{Env.__namespace__}.connector.ssl', 'True')
+        if isinstance(ssl_env, bool):
+            self.ssl = ssl_env
+        else:
+            # Convert string to boolean - handle 'False', 'false', '0', etc.
+            self.ssl = ssl_env.lower() not in ('false', '0', 'no', 'off')
 
     @staticmethod
     def load():
