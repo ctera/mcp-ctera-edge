@@ -52,7 +52,7 @@ Configuration using SSE:
 export ctera.mcp.edge.settings.host="your.ctera.edge.hostname.or.ipaddr"
 export ctera.mcp.edge.settings.user="admin-username"
 export ctera.mcp.edge.settings.password="admin-password"
-export ctera.mcp.core.settings.ssl="true"
+export ctera.mcp.edge.settings.ssl="true"
 ```
 
 ```powershell
@@ -70,4 +70,27 @@ $env:ctera.mcp.edge.settings.ssl = "true"
     }
   }
 }
+```
+
+---
+
+## 🐳 Docker Deployment
+
+You can also run the MCP server using Docker:
+
+### Build the Docker Image
+
+```bash
+docker build -t mcp-ctera-edge .
+```
+
+### Run with Docker
+
+```bash
+docker run -p 8000:8000 \
+  -e ctera.mcp.edge.settings.host=your.ctera.edge.hostname.or.ipaddr \
+  -e ctera.mcp.edge.settings.user=admin-username \
+  -e ctera.mcp.edge.settings.password=admin-password \
+  -e ctera.mcp.edge.settings.ssl=true \
+  mcp-ctera-edge
 ```
