@@ -42,9 +42,7 @@ async def ctera_edge_filer_makedirs(path: str, ctx: Context) -> str:
 
 @mcp.tool()
 @with_session_refresh
-async def ctera_edge_filer_copy_item(
-    source: str, destination: str, ctx: Context
-) -> str:
+async def ctera_edge_filer_copy_item(source: str, destination: str, ctx: Context) -> str:
     edge = ctx.request_context.lifespan_context.session
     await edge.files.copy(source, destination)
     return f"Copied: {source} to: {destination}"
@@ -52,9 +50,7 @@ async def ctera_edge_filer_copy_item(
 
 @mcp.tool()
 @with_session_refresh
-async def ctera_edge_filer_move_item(
-    source: str, destination: str, ctx: Context
-) -> str:
+async def ctera_edge_filer_move_item(source: str, destination: str, ctx: Context) -> str:
     edge = ctx.request_context.lifespan_context.session
     await edge.files.move(source, destination)
     return f"Moved: {source} to: {destination}"
