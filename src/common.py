@@ -5,11 +5,11 @@ from dataclasses import dataclass
 from contextlib import asynccontextmanager
 from typing import AsyncIterator, Callable
 from mcp.server.fastmcp import FastMCP
-from cterasdk import AsyncEdge, settings
-from cterasdk.exceptions import SessionExpired
+from cterasdk import AsyncEdge, settings, exceptions
 
 
 logger = logging.getLogger('ctera.mcp.edge')
+logger.setLevel(logging.INFO)
 logger.info("Starting CTERA Edge Filer Model Context Protocol [MCP] Server.")
 
 
@@ -99,7 +99,7 @@ def with_session_refresh(function: Callable) -> Callable:
         user = ctx.request_context.lifespan_context.session
         try:
             return await function(*args, **kwargs)
-        except SessionExpired:
+        except exceptions.session.SessionExpired:
             await user.login()
             return await function(*args, **kwargs)
         except Exception as e:
